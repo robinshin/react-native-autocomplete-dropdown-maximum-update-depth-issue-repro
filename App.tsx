@@ -1,131 +1,84 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useMemo} from 'react';
 import {
+  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
   View,
+  Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {AutocompleteDropdownContextProvider} from 'react-native-autocomplete-dropdown';
+import {LocalDataSetExample} from './components/LocalDataSetExample';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
+  const themeName = useColorScheme() || 'light';
+  const styles = useMemo(() => getStyles(themeName), [themeName]);
+  const isDarkMode = themeName === 'dark';
 
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: isDarkMode ? '#121212' : Colors.lighter,
   };
 
-  /*
-   * To keep the template simple and small we're adding padding to prevent view
-   * from rendering under the System UI.
-   * For bigger apps the reccomendation is to use `react-native-safe-area-context`:
-   * https://github.com/AppAndFlow/react-native-safe-area-context
-   *
-   * You can read more about it here:
-   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
-   */
-  const safePadding = '5%';
-
   return (
-    <View style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        style={backgroundStyle}>
-        <View style={{paddingRight: safePadding}}>
-          <Header/>
-        </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            paddingHorizontal: safePadding,
-            paddingBottom: safePadding,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </View>
+    <AutocompleteDropdownContextProvider
+    //  headerOffset={100}
+    >
+      <SafeAreaView style={[styles.safeArea, backgroundStyle]}>
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        <KeyboardAvoidingView
+          style={styles.scrollContainer}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          enabled>
+          <ScrollView
+            nestedScrollEnabled
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+            contentInsetAdjustmentBehavior="automatic"
+            style={styles.scrollContainer}>
+            <View style={styles.container}>
+              <Text style={styles.title}>Autocomplete dropdown</Text>
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Local list</Text>
+                <LocalDataSetExample />
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </AutocompleteDropdownContextProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+const getStyles = (themeName: 'light' | 'dark' = 'light') =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+    },
+    scrollContainer: {
+      flex: 1,
+    },
+    container: {
+      padding: 20,
+    },
+    title: {
+      textAlign: 'center',
+      fontSize: 25,
+      marginBottom: 50,
+      color: themeName === 'dark' ? '#fff' : '#000',
+    },
+    section: {
+      marginBottom: 40,
+    },
+    sectionTitle: {
+      fontWeight: 'bold',
+      marginBottom: 3,
+      color: themeName === 'dark' ? '#ffffffb6' : '#000000b0',
+    },
+  });
 
 export default App;
