@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useRef, useState } from 'react'
 import { Text, View } from 'react-native'
 import type { AutocompleteDropdownItem, IAutocompleteDropdownProps } from 'react-native-autocomplete-dropdown'
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'
@@ -8,9 +8,12 @@ const ItemSeparatorComponent = () => <View style={{ height: 1, width: '100%', ba
 export const LocalDataSetExample = memo((props: Omit<IAutocompleteDropdownProps, 'ref' | 'dataSet'>) => {
   const [selectedItem, setSelectedItem] = useState<AutocompleteDropdownItem | null>(null)
 
+  const ref = useRef(null)
+
   return (
     <>
       <AutocompleteDropdown
+        ref = {ref}
         clearOnFocus={false}
         closeOnBlur={true}
         showClear={false}
